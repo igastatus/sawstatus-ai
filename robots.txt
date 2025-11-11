@@ -1,0 +1,25 @@
+# robots.txt for SAWSTATUS
+# Istanbul Sabiha Gokcen Airport Flight Tracker
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://sawstatus.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow charts (large PDFs)
+User-agent: *
+Disallow: /charts/
+
+# Allow Google
+User-agent: Googlebot
+Allow: /
+Allow: /charts/
+
+# Allow Bing
+User-agent: Bingbot
+Allow: /
+Allow: /charts/
