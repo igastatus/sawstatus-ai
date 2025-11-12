@@ -47,6 +47,7 @@
                     iframe.height = '100%';
                     iframe.frameBorder = '0';
                     iframe.loading = 'lazy';
+                    iframe.setAttribute('importance', 'low');
 
                     // Remove loading placeholder
                     const placeholder = container.querySelector('.loading-placeholder');
@@ -67,7 +68,7 @@
             }
         });
     }, {
-        rootMargin: '100px'
+        rootMargin: '200px' // Increased for better mobile experience
     });
 
     // Observe all lazy-load containers
@@ -136,22 +137,50 @@
     });
 
     // ====================================
-    // Navbar Scroll Effect
+    // Navbar Scroll Effect - Optimized for Mobile
     // ====================================
     let lastScroll = 0;
+    let ticking = false;
     const navbar = document.querySelector('.navbar');
+
+    // Check if on mobile
+    const isMobile = () => window.innerWidth <= 768;
+
+    function updateNavbar(currentScroll) {
+        if (currentScroll <= 0) {
+            navbar.classList.remove('navbar-scrolled');
+            navbar.style.transform = 'translateY(0)';
+            navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
+        } else {
+            navbar.classList.add('navbar-scrolled');
+            navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
+
+            // On mobile, hide navbar when scrolling down, show when scrolling up
+            if (isMobile()) {
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    // Scrolling down & past threshold - hide navbar
+                    navbar.style.transform = 'translateY(-100%)';
+                } else if (currentScroll < lastScroll) {
+                    // Scrolling up - show navbar
+                    navbar.style.transform = 'translateY(0)';
+                }
+            }
+        }
+
+        lastScroll = currentScroll;
+        ticking = false;
+    }
 
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
 
-        if (currentScroll <= 0) {
-            navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
-        } else {
-            navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateNavbar(currentScroll);
+            });
+            ticking = true;
         }
-
-        lastScroll = currentScroll;
-    });
+    }, { passive: true });
 
     // ====================================
     // Flight Count Estimation
